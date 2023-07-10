@@ -1,0 +1,5 @@
+{
+    "board": "arduino:mbed_nano:nano33ble",
+    "port": "COM15",
+    "sketch": "ToF_Distance_MW\\tofDistance_mw\\tofDistance_mw.ino"
+}
