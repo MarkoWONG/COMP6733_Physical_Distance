@@ -30,6 +30,8 @@ void setup() {
   Serial.begin(9600);
   
   pinMode(buzzerPin, OUTPUT);
+  //HIGH = OFF! cause why not appearently
+  digitalWrite(buzzerPin, HIGH);
 
   // IMPORTANT: ENTER START TIME BEFORE CONNECTING TO OTHER THINGS
   setSyncProvider(requestSync);
@@ -148,7 +150,7 @@ bool checkContactRssiStrategy() {
   if (dist <= closeContactDist) {
     return true;
   } else if (dist > closeContactDist) {
-    digitalWrite(LED_BUILTIN, 0);
+    noTone(buzzerPin);
   }
   return false;
 }
@@ -208,16 +210,7 @@ unsigned int rssiMovAvg() {
 
 // Alert method: update to preferred method (e.g. buzzer)
 void alertContact() {
-  digitalWrite(LED_BUILTIN, 1);
-
-  // activate buzzer for 3 times
-  for (auto sec = 0; sec < 3; sec++){
-    digitalWrite(buzzerPin, HIGH);       // sets the digital pin 13 on
-    delay(500);                  // waits for a second
-    digitalWrite(buzzerPin, LOW);        // sets the digital pin 13 off
-    delay(500);                  // waits for a second
-  }
-  
+  tone(buzzerPin, 65, 10);
 }
 
 void recordContact(BLEDevice central) {

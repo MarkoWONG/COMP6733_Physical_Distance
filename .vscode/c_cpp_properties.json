@@ -3,28 +3,28 @@
     "configurations": [
         {
             "name": "Arduino",
-            "compilerPath": "C:\\Users\\nfslo\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\bin\\arm-none-eabi-g++",
+            "compilerPath": "C:\\Users\\user\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\bin\\arm-none-eabi-g++",
             "compilerArgs": [
                 "-w",
                 "-nostdlib"
             ],
             "intelliSenseMode": "gcc-x64",
             "includePath": [
-                "C:\\Users\\nfslo\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\mbed_nano\\4.0.2\\cores\\arduino",
-                "C:\\Users\\nfslo\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\mbed_nano\\4.0.2\\variants\\ARDUINO_NANO33BLE",
-                "C:\\Users\\nfslo\\OneDrive\\Documents\\Arduino\\libraries\\ArduinoBLE\\src",
-                "C:\\Users\\nfslo\\OneDrive\\Documents\\Arduino\\libraries\\Time",
-                "C:\\Users\\nfslo\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\mbed_nano\\4.0.2\\cores\\arduino\\api\\deprecated",
-                "C:\\Users\\nfslo\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\mbed_nano\\4.0.2\\cores\\arduino\\api\\deprecated-avr-comp",
-                "c:\\users\\nfslo\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1",
-                "c:\\users\\nfslo\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1\\arm-none-eabi",
-                "c:\\users\\nfslo\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1\\backward",
-                "c:\\users\\nfslo\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\lib\\gcc\\arm-none-eabi\\7.2.1\\include",
-                "c:\\users\\nfslo\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\lib\\gcc\\arm-none-eabi\\7.2.1\\include-fixed",
-                "c:\\users\\nfslo\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include"
+                "C:\\Users\\user\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\mbed_nano\\4.0.2\\cores\\arduino",
+                "C:\\Users\\user\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\mbed_nano\\4.0.2\\variants\\ARDUINO_NANO33BLE",
+                "C:\\Users\\user\\Documents\\Arduino\\libraries\\ArduinoBLE\\src",
+                "C:\\Users\\user\\Documents\\Arduino\\libraries\\Time",
+                "C:\\Users\\user\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\mbed_nano\\4.0.2\\cores\\arduino\\api\\deprecated",
+                "C:\\Users\\user\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\mbed_nano\\4.0.2\\cores\\arduino\\api\\deprecated-avr-comp",
+                "c:\\users\\user\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1",
+                "c:\\users\\user\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1\\arm-none-eabi",
+                "c:\\users\\user\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include\\c++\\7.2.1\\backward",
+                "c:\\users\\user\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\lib\\gcc\\arm-none-eabi\\7.2.1\\include",
+                "c:\\users\\user\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\lib\\gcc\\arm-none-eabi\\7.2.1\\include-fixed",
+                "c:\\users\\user\\appdata\\local\\arduino15\\packages\\arduino\\tools\\arm-none-eabi-gcc\\7-2017q4\\arm-none-eabi\\include"
             ],
             "forcedInclude": [
-                "C:\\Users\\nfslo\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\mbed_nano\\4.0.2\\cores\\arduino\\Arduino.h"
+                "C:\\Users\\user\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\mbed_nano\\4.0.2\\cores\\arduino\\Arduino.h"
             ],
             "cStandard": "c11",
             "cppStandard": "c++11",
