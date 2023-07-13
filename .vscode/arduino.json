@@ -1,6 +1,7 @@
 {
     "board": "arduino:mbed_nano:nano33ble",
     "port": "COM15",
-    "sketch": "tofDistance_mw\\tofDistance_mw.ino",
-    "output": "./ArduinoOutput"
+    "sketch": "marko\\main\\main.ino",
+    "output": "./ArduinoOutput",
+    "programmer": "cmsis-dap"
 }
