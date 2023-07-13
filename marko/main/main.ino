@@ -6,20 +6,27 @@
 
 const String commonBLEName = "contactTracing";
 
-const int samplingInterval = 250;     // RSSI sample rate in ms
-unsigned long prevMillis = 0;         // Helper for sampling rate
+const int adjustmentFactor = 1;
+const int closeContactDist = 200;   // in mm
 
-const unsigned int sampleSize = 5;      // Size our circular buffer
+const int samplingInterval = 100;       // RSSI sample rate in ms
+unsigned long prevMillis = 0;           // Helper for sampling rate
+
+const unsigned int sampleSize = 15;      // Size our circular buffer
 unsigned int rssiPool[sampleSize];      // Circular buffer (i.e. queue)
 unsigned int curr;                      // Index into circular buffer
 const unsigned int rssiStarting = 100;  // Starting RSSI (intentionally large)
-unsigned int rssiMovSum;                 // Moving sum of RSSI's in circular buffer
+unsigned int rssiMovSum;                // Moving sum of RSSI's in circular buffer
+
+const int buzzerPin = 13; // Assuming buzzer is in D13
 
 void setup() {
   rssiValsInitialisation();
 
   Serial.begin(9600);
   
+  pinMode(buzzerPin, OUTPUT);
+
   // IMPORTANT: ENTER START TIME BEFORE CONNECTING TO OTHER THINGS
   setSyncProvider(requestSync);
 
@@ -134,9 +141,9 @@ bool checkContactRssiStrategy() {
   uint rssi = rssiMovAvg();
   uint dist = distance(rssi);
 
-  if (dist <= 30) {
+  if (dist <= closeContactDist) {
     return true;
-  } else if (dist > 60) {
+  } else if (dist > closeContactDist) {
     digitalWrite(LED_BUILTIN, 0);
   }
   return false;
@@ -145,27 +152,10 @@ bool checkContactRssiStrategy() {
 // Compute the distance to the connected device.
 // TODO: need a fast calibration process for demo day.
 unsigned int distance(uint rssi) {
-  uint dist;
 
-  if (rssi < 45) {
-    dist = 0;
-  } else if (rssi < 53) {
-    dist = 10;
-  } else if (rssi < 55) {
-    dist = 20;
-  } else if (rssi < 57) {
-    dist = 30;
-  } else if (rssi < 63) {
-    dist = 40;
-  } else if (rssi < 70) {
-    dist = 50;
-  } else if (rssi < 76) {
-    dist = 60;
-  } else if (rssi < 82) {
-    dist = 70;
-  } else {
-    dist = 80;
-  }
+   // 2PM Measurement: m = 9.909, c = 58.234
+  uint dist = max((rssi - 58.234) / 9.909, 0) * 100 * adjustmentFactor;
+
   Serial.print("Distance: ");
   Serial.println(dist);
   return dist;
@@ -197,6 +187,15 @@ unsigned int rssiMovAvg() {
 // Alert method: update to preferred method (e.g. buzzer)
 void alertContact() {
   digitalWrite(LED_BUILTIN, 1);
+
+  // activate buzzer for 3 times
+  for (auto sec = 0; sec < 3; sec++){
+    digitalWrite(buzzerPin, HIGH);       // sets the digital pin 13 on
+    delay(500);                  // waits for a second
+    digitalWrite(buzzerPin, LOW);        // sets the digital pin 13 off
+    delay(500);                  // waits for a second
+  }
+  
 }
 
 void recordContact(BLEDevice central) {
