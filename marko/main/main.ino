@@ -20,6 +20,10 @@ unsigned int rssiMovSum;                // Moving sum of RSSI's in circular buff
 
 const int buzzerPin = 13; // Assuming buzzer is in D13
 
+// Time of day profile
+const float c_profile_timeOfDay[3] = {50,58.234,55};
+const float m_profile_timeOfDay[3] = {8.01,9.909,8.5};
+
 void setup() {
   rssiValsInitialisation();
 
@@ -153,8 +157,26 @@ bool checkContactRssiStrategy() {
 // TODO: need a fast calibration process for demo day.
 unsigned int distance(uint rssi) {
 
-   // 2PM Measurement: m = 9.909, c = 58.234
-  uint dist = max((rssi - 58.234) / 9.909, 0) * 100 * adjustmentFactor;
+  // 2PM Measurement: m = 9.909, c = 58.234
+  float m = 9.909;
+  float c = 58.234;
+  // Morning
+  if (hour() < 10){
+    m = m_profile_timeOfDay[0];
+    c = c_profile_timeOfDay[0];
+  }
+  // Mid-day
+  else if (hour() >= 10 && hour() <= 17){
+    m = m_profile_timeOfDay[1];
+    c = c_profile_timeOfDay[1];
+  }
+  // Arvo
+  else {
+    m = m_profile_timeOfDay[2];
+    c = c_profile_timeOfDay[1];
+  }
+  
+  uint dist = max((rssi - c) / m, 0) * 100 * adjustmentFactor;
 
   Serial.print("Distance: ");
   Serial.println(dist);
@@ -201,6 +223,6 @@ void alertContact() {
 void recordContact(BLEDevice central) {
   Serial.print("Contact with address: ");
   Serial.println(central.address());
-  Serial.print("Contact Time: ")
+  Serial.print("Contact Time: ");
   digitalClockDisplay();
 }
