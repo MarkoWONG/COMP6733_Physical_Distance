@@ -21,17 +21,16 @@ unsigned int rssiMovSum;                // Moving sum of RSSI's in circular buff
 const int buzzerPin = 13; // Assuming buzzer is in D13
 
 // Time of day profile
-const float c_profile_timeOfDay[3] = {50,58.234,55};
-const float m_profile_timeOfDay[3] = {8.01,9.909,8.5};
+const float c_profile_timeOfDay[3] = {50,58.234,58.234};
+const float m_profile_timeOfDay[3] = {8.01,9.909,9.909};
 
 void setup() {
   rssiValsInitialisation();
 
   Serial.begin(9600);
   
-  pinMode(buzzerPin, OUTPUT);
-  //HIGH = OFF! cause why not appearently
-  digitalWrite(buzzerPin, HIGH);
+  // pinMode(buzzerPin, OUTPUT);
+  noTone(buzzerPin);
 
   // IMPORTANT: ENTER START TIME BEFORE CONNECTING TO OTHER THINGS
   setSyncProvider(requestSync);
@@ -150,6 +149,7 @@ bool checkContactRssiStrategy() {
   if (dist <= closeContactDist) {
     return true;
   } else if (dist > closeContactDist) {
+    digitalWrite(LED_BUILTIN, 0);
     noTone(buzzerPin);
   }
   return false;
@@ -210,7 +210,17 @@ unsigned int rssiMovAvg() {
 
 // Alert method: update to preferred method (e.g. buzzer)
 void alertContact() {
-  tone(buzzerPin, 65, 10);
+  digitalWrite(LED_BUILTIN, 1);
+
+  // activate buzzer for 3 times
+  // for (auto sec = 0; sec < 3; sec++){
+    tone(buzzerPin, 110);
+    // digitalWrite(buzzerPin, HIGH);       // sets the digital pin 13 on
+  //   delay(500);                  // waits for a second
+  //   digitalWrite(buzzerPin, LOW);        // sets the digital pin 13 off
+  //   delay(500);                  // waits for a second
+  // }
+  
 }
 
 void recordContact(BLEDevice central) {
