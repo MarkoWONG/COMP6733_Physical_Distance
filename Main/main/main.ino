@@ -33,35 +33,43 @@ void loop() {
     BLEDevice peripheral = BLE.available();
 
     if (peripheral) {
-      // discovered a peripheral
-      Serial.println("Discovered a peripheral");
-      Serial.println("-----------------------");
+      
 
-      // print address
-      Serial.print("Address: ");
-      Serial.println(peripheral.address());
+      // // print address
+      // Serial.print("Address: ");
+      // Serial.println(peripheral.address());
 
       // print the local name, if present
-      if (peripheral.hasLocalName()) {
+      if (peripheral.hasLocalName() && peripheral.localName()=="6733ContactTracing") {
+        
+        // John algo to find distance based on rssi
+        int distance = circularWait();
+
+        // Marko Stuff buzzer, etc
+
+
+        // discovered a peripheral
+        Serial.println("Discovered a peripheral");
+        Serial.println("-----------------------");
         Serial.print("Local Name: ");
         Serial.println(peripheral.localName());
-      }
+        // print the RSSI
+        Serial.print("RSSI: ");
+        Serial.println(peripheral.rssi());
 
-      // print the advertised service UUIDs, if present
-      if (peripheral.hasAdvertisedServiceUuid()) {
-        Serial.print("Service UUIDs: ");
-        for (int i = 0; i < peripheral.advertisedServiceUuidCount(); i++) {
-          Serial.print(peripheral.advertisedServiceUuid(i));
-          Serial.print(" ");
-        }
         Serial.println();
       }
+      
 
-      // print the RSSI
-      Serial.print("RSSI: ");
-      Serial.println(peripheral.rssi());
-
-      Serial.println();
+      // // print the advertised service UUIDs, if present
+      // if (peripheral.hasAdvertisedServiceUuid()) {
+      //   Serial.print("Service UUIDs: ");
+      //   for (int i = 0; i < peripheral.advertisedServiceUuidCount(); i++) {
+      //     Serial.print(peripheral.advertisedServiceUuid(i));
+      //     Serial.print(" ");
+      //   }
+        // Serial.println();
+      // }
     }
     prevMillis = millis();
   }
