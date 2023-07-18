@@ -24,6 +24,10 @@ const int buzzerPin = 13; // Assuming buzzer is in D13
 const float c_profile_timeOfDay[3] = {50,58.234,58.234};
 const float m_profile_timeOfDay[3] = {8.01,9.909,9.909};
 
+// For tester 
+BLEService testerService("4A981234-1CC4-E7C1-C757-F1267DD021E8");
+BLEByteCharacteristic distanceReadingCharacteristic("4A981236-1CC4-E7C1-C757-F1267DD021E8", BLENotify | BLERead | BLEWrite);
+
 void setup() {
   rssiValsInitialisation();
 
@@ -35,20 +39,21 @@ void setup() {
   // IMPORTANT: ENTER START TIME BEFORE CONNECTING TO OTHER THINGS
   setSyncProvider(requestSync);
 
+  // Service to see distance reading on central devices (clients)
+  // BLE.setAdvertisedService(testerService);
+  BLE.addService(testerService);
+  testerService.addCharacteristic(distanceReadingCharacteristic);
+  distanceReadingCharacteristic.writeValue(0);
+  // Begin BLE connections
   BLE.begin();
   BLE.setLocalName("contactTracing");
   BLE.advertise();
-
-  // // Event handler for when peripheral is found with specific name
-  // // BLE.setEventHandler(BLEDiscovered, peripheralDiscoveredWithName);
-  // // BLE.scanForName(commonBLEName);
 
   // Event handlers for when a central connects.
   // Board acts as a peripheral when this happens.
   BLE.setEventHandler(BLEConnected, centralConnected);
   BLE.setEventHandler(BLEDisconnected, centralDisconnected);
 
-  // Serial.println("Peripheral is running");
 }
 
 void loop() {
@@ -159,7 +164,6 @@ bool checkContactRssiStrategy() {
 // TODO: need a fast calibration process for demo day.
 unsigned int distance(uint rssi) {
 
-  // 2PM Measurement: m = 9.909, c = 58.234
   float m = 9.909;
   float c = 58.234;
   // Morning
@@ -180,6 +184,7 @@ unsigned int distance(uint rssi) {
   
   uint dist = max((rssi - c) / m, 0) * 100 * adjustmentFactor;
 
+  distanceReadingCharacteristic.writeValue(dist);
   Serial.print("Distance: ");
   Serial.println(dist);
   return dist;
@@ -210,20 +215,15 @@ unsigned int rssiMovAvg() {
 
 // Alert method: update to preferred method (e.g. buzzer)
 void alertContact() {
+  // turn on led
   digitalWrite(LED_BUILTIN, 1);
 
-  // activate buzzer for 3 times
-  // for (auto sec = 0; sec < 3; sec++){
-    tone(buzzerPin, 110);
-    // digitalWrite(buzzerPin, HIGH);       // sets the digital pin 13 on
-  //   delay(500);                  // waits for a second
-  //   digitalWrite(buzzerPin, LOW);        // sets the digital pin 13 off
-  //   delay(500);                  // waits for a second
-  // }
-  
+  // turn on buzzer
+  tone(buzzerPin, 110);
 }
 
 void recordContact(BLEDevice central) {
+  // print contact details
   Serial.print("Contact with address: ");
   Serial.println(central.address());
   Serial.print("Contact Time: ");
