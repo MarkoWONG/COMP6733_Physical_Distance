@@ -1,3 +1,4 @@
+// Code was inspired by https://github.com/arduino-libraries/ArduinoBLE/blob/master/examples/Central/Scan/Scan.ino
 #include <ArduinoBLE.h>
 
 const int samplingInterval = 5;
