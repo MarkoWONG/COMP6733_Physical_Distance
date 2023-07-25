@@ -1,6 +1,9 @@
 // Code was inspired by https://github.com/arduino-libraries/ArduinoBLE/blob/master/examples/Central/Scan/Scan.ino
 #include <ArduinoBLE.h>
+#include <TimeLib.h>
 
+#define TIME_HEADER "T"
+#define TIME_REQUEST 7
 
 const uint samplingInterval = 1000;
 const uint sampleSize = 15;
@@ -32,8 +35,11 @@ void setup() {
 
   // start scanning for peripheral
   BLE.setLocalName(deviceName);
+
+  // Set the current time for contact time
+  setCurrentTime();
+
   BLE.advertise();
-  // BLE.scan();
 }
 
 void loop() {
@@ -68,7 +74,6 @@ void loop() {
         alertContact();
         recordContact(peripheral);
       } else {
-        // TODO: Remove this when buzzer implemented
         digitalWrite(LED_BUILTIN, 0);
         noTone(buzzerPin);
       }
@@ -114,7 +119,46 @@ void alertContact() {
 
 void recordContact(BLEDevice device) {
   Serial.println("Contact with address: " + device.address());
+  Serial.print("Contact Time: ");
+  digitalClockDisplay();
 }
 
 
+//----------------Clock timing Stuff----------------//
+void digitalClockDisplay() {
+  Serial.print(hour());
+  printDigits(minute());
+  printDigits(second());
+  Serial.print(" ");
+  Serial.print(day());
+  Serial.print(" ");
+  Serial.print(month());
+  Serial.print(" ");
+  Serial.println(year());  
+}
 
+void printDigits(int digits){
+  Serial.print(":");
+  if (digits < 10){
+    Serial.print('0');
+  }
+  Serial.print(digits);
+}
+
+void setCurrentTime(){
+  unsigned long pcTime;
+  // 1689225031 = 13/07/2023 3:10pm
+  const unsigned long DEFAULT_TIME = 1689225031;
+
+  Serial.println("Waiting for current time input:");
+  while (true){
+    if (Serial.find(TIME_HEADER)){
+      pcTime = Serial.parseInt();
+      setTime(pcTime);
+      break;
+    }
+  }
+
+}
+
+/////////////////////////////////////////////////////////////
