@@ -26,27 +26,27 @@ async def run():
             print('Found "ContactTracing" Peripheral Device')
             found = True
 
-            # Connect to Peripheral
-            async with BleakClient(d.address) as client:
-                print(f'Connected to {d.address}')
+            # # Connect to Peripheral
+            # async with BleakClient(d.address) as client:
+            #     print(f'Connected to {d.address}')
 
-                # await client.start_notify(distanceReading_UUID, handle_rx)
+            #     # await client.start_notify(distanceReading_UUID, handle_rx)
                 
-                # loop = asyncio.get_running_loop()
-                custom_svc = client.services.get_service("4A981234-1CC4-E7C1-C757-F1267DD021E8")
-                read_char = custom_svc.get_characteristic(distanceReading_UUID)
-                while True:
-                    # This waits until you type a line and press ENTER.
-                    # data = await loop.run_in_executor(None, sys.stdin.buffer.readline)
+            #     # loop = asyncio.get_running_loop()
+            #     custom_svc = client.services.get_service("4A981234-1CC4-E7C1-C757-F1267DD021E8")
+            #     read_char = custom_svc.get_characteristic(distanceReading_UUID)
+            #     while True:
+            #         # This waits until you type a line and press ENTER.
+            #         # data = await loop.run_in_executor(None, sys.stdin.buffer.readline)
                    
-                    # # data will be empty on EOF (e.g. CTRL+D on *nix)
-                    # if not data:
-                    #     break
+            #         # # data will be empty on EOF (e.g. CTRL+D on *nix)
+            #         # if not data:
+            #         #     break
 
-                    # await client.write_gatt_char(wrt_char, data)
+            #         # await client.write_gatt_char(wrt_char, data)
 
 
-                    await client.read_gatt_char(read_char)
+            #         await client.read_gatt_char(read_char)
 
     if not found:
         print('Could not find "ContactTracing" Peripheral Device')
