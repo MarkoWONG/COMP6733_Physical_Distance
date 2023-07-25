@@ -8,6 +8,7 @@ const uint adjustmentFactor = 1;
 const uint contactDist = 200; // cm
 const char * deviceName = "6733ContactTracing";
 
+const int buzzerPin = 13; // Assuming buzzer is in D13
 
 // Used for looping frequency
 unsigned long prevMillis = 0;
@@ -16,6 +17,7 @@ void setup() {
   Serial.begin(9600);
 
   pinMode(LED_BUILTIN, OUTPUT);
+  noTone(buzzerPin);
   
   while (!Serial);
 
@@ -68,6 +70,7 @@ void loop() {
       } else {
         // TODO: Remove this when buzzer implemented
         digitalWrite(LED_BUILTIN, 0);
+        noTone(buzzerPin);
       }
 
       // Move onto the next device that was scanned
@@ -105,6 +108,8 @@ uint distance(uint rssi) {
 
 void alertContact() {
   digitalWrite(LED_BUILTIN, 1);
+  // turn on buzzer
+  tone(buzzerPin, 110);
 }
 
 void recordContact(BLEDevice device) {
