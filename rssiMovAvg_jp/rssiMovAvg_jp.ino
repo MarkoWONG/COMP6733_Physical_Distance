@@ -1,6 +1,6 @@
 #include <ArduinoBLE.h>
 
-const String commonBLEName = "contactTracing";
+const String commonBLEName = "6733ContactTracing";
 
 const int adjustmentFactor = 1;
 const int closeContactDist = 200;   // in mm
@@ -24,11 +24,15 @@ void setup() {
   Serial.begin(9600);
   pinMode(LED_BUILTIN, OUTPUT);       // Using the LED as notification of close contact
 
-  BLE.begin();
-  BLE.setLocalName("contactTracing");
+  if (!BLE.begin()) {
+    Serial.println("Begin did not work");
+  }
+// 
+  BLE.setLocalName("6733ContactTracing");
   // BLE.setAdvertisedService(contactTracingService);
   // BLE.addService(contactTracingService);
   BLE.advertise();
+  BLE.setConnectable(true);
 
   // Event handler for when peripheral is found with specific name
   // BLE.setEventHandler(BLEDiscovered, peripheralDiscoveredWithName);
@@ -47,7 +51,6 @@ void loop() {
   // BLE.scanForName(commonBLEName);
   // BLEDevice peripheral = BLE.available();
   // Connect to peripheral and perform logic as a central device
-
   BLE.poll();
 }
 

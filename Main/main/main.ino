@@ -11,7 +11,17 @@ const uint adjustmentFactor = 1;
 const uint contactDist = 200; // cm
 const char * deviceName = "6733ContactTracing";
 
-const int buzzerPin = 13; // Assuming buzzer is in D13
+uint errorCount = 0;
+const uint maxErrors = 3;
+
+// Module control: turn these features on or off
+const bool timestampingOn = false;
+const bool buzzerOn = false;
+
+// buzzerPin D10 to avoid sharing the LED I/O
+const int buzzerPin = 10;
+
+const int resetPin = 8;
 
 // Used for looping frequency
 unsigned long prevMillis = 0;
@@ -20,26 +30,45 @@ void setup() {
   Serial.begin(9600);
 
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LEDR, OUTPUT);
+  pinMode(LEDG, OUTPUT);
+  pinMode(LEDB, OUTPUT);
+  pinMode(resetPin, OUTPUT);
+
+  digitalWrite(LED_BUILTIN, 0);
+  digitalWrite(LEDR, 1);
+  digitalWrite(LEDG, 1);
+  digitalWrite(LEDB, 1);
+  digitalWrite(resetPin, 1);
+
   noTone(buzzerPin);
   
-  while (!Serial);
+  // Line below commented out for battery power use
+  // while (!Serial);
 
   // begin initialization
   if (!BLE.begin()) {
     Serial.println("starting Bluetooth® Low Energy module failed!");
-
     while (1);
   }
 
   Serial.println("Bluetooth® Low Energy Central scan");
+  Serial.println("----------------------------------");
+  Serial.println("----------------------------------");
+  Serial.println("----------------------------------");
+  Serial.println("----------------------------------");
+
 
   // start scanning for peripheral
   BLE.setLocalName(deviceName);
 
   // Set the current time for contact time
-  setCurrentTime();
+  if (timestampingOn) {
+    setCurrentTime();
+  }
 
   BLE.advertise();
+  // BLE.scanForName(deviceName);
 }
 
 void loop() {
@@ -48,25 +77,35 @@ void loop() {
   uint rssi;
   unsigned long currMillis = millis();
 
-  // Only scan for devices at this interval
   if (currMillis - prevMillis >= samplingInterval) {
-
-    BLE.scan();
-    // BLE.scanForName(deviceName);
-    // BLE.scanForAddress("c5:f2:f4:40:ed:30");
+    digitalWrite(LED_BUILTIN, 0);
+    Serial.println("Checkpoint: 1");
+    
     BLEDevice peripheral = BLE.available();
+    Serial.println("Checkpoint: 2");
+
+    BLE.stopScan();
+    Serial.println("Checkpoint: 3");
+    
+    BLE.stopAdvertise();
+    BLE.disconnect();
+    Serial.println("Checkpoint: 4");
+
     while (peripheral) {
       // If the device allows you to connect, take the average RSSI's
+      Serial.println("Checkpoint: 5");
+
       if (peripheral.connect()) {
+        Serial.println("Connected to: " + peripheral.address());
         rssi = rssiAvg(peripheral);
         peripheral.disconnect();
+        Serial.println("Disconnected from: " + peripheral.address());
 
       // If the device does not allow you to connect, then take the advertised RSSI
       } else {
         rssi = peripheral.rssi() * -1;
-        peripheral.disconnect();
       }
-
+  
       dist = distance(rssi);
       Serial.println("Device: " + peripheral.address() + ", RSSI: " + rssi + ", Distance: " + dist);
 
@@ -77,13 +116,43 @@ void loop() {
         digitalWrite(LED_BUILTIN, 0);
         noTone(buzzerPin);
       }
+      Serial.println("Checkpoint: 6");
 
       // Move onto the next device that was scanned
       peripheral = BLE.available();
+      Serial.println("Checkpoint: 7");
     }
 
-    Serial.println("Out of loop");
+    // Keep on advertising until it works.
+    // RED LED indicates advertising has failed.
+    while (!BLE.advertise()) {
+      digitalWrite(LEDR, 0);
+      Serial.println("Advertise: failure");
+      BLE.stopAdvertise();
+      errorCount++;
+      if (errorCount >= maxErrors) {
+        digitalWrite(resetPin, 0);
+      }
+    }
+    errorCount = 0;
+    digitalWrite(LEDR, 1);
+    Serial.println("Advertise: success!");
 
+    // Keep on scanning until it works
+    // Blue LED indicates it has failed.
+    while (!BLE.scanForName(deviceName)) {
+      digitalWrite(LEDB, 0);
+      Serial.println("Scan failed!");
+      BLE.stopScan();
+      errorCount++;
+      if (errorCount > maxErrors) {
+        digitalWrite(resetPin, 0);
+      }
+    }
+    errorCount = 0;
+    Serial.println("Scan success!");
+    digitalWrite(LEDB, 1);
+    
     prevMillis = millis();
   }
   
@@ -113,14 +182,18 @@ uint distance(uint rssi) {
 
 void alertContact() {
   digitalWrite(LED_BUILTIN, 1);
-  // turn on buzzer
-  tone(buzzerPin, 110);
+  // turn on buzzer if module switched on
+  if (buzzerOn) {
+    tone(buzzerPin, 25);
+  }
 }
 
 void recordContact(BLEDevice device) {
   Serial.println("Contact with address: " + device.address());
-  Serial.print("Contact Time: ");
-  digitalClockDisplay();
+  if (timestampingOn) {
+    Serial.print("Contact Time: ");
+    digitalClockDisplay();
+  }
 }
 
 
@@ -162,3 +235,6 @@ void setCurrentTime(){
 }
 
 /////////////////////////////////////////////////////////////
+
+// RANDOM JP NOTES
+// 1. Randomise the interval to an extent so that devices don't clash
