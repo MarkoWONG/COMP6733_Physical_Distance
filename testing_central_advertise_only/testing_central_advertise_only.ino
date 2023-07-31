@@ -8,7 +8,7 @@
 
 #include <ArduinoBLE.h>
 
-const char * centralName = "testing_central";
+const char * nameThisDevice = "testing_device";
 
 void setup() {
   Serial.begin(9600);
@@ -22,7 +22,7 @@ void setup() {
     while(1);
   }
 
-  BLE.setLocalName(centralName);
+  BLE.setLocalName(nameThisDevice);
   BLE.advertise();
 }
 

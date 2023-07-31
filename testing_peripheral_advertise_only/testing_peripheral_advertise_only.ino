@@ -8,13 +8,13 @@
 
 #include <ArduinoBLE.h>
 
-const char * deviceName = "testing_periph";
-const char * centralName = "testing_central";
+const char * nameThisDevice = "testing_device";
+const char * nameOtherDevice = "testing_device";
 
 const int adjustmentFactor = 1;
 const int closeContactDist = 200;   // in mm
 
-const int samplingInterval = 250;       // RSSI sample rate in ms
+const int samplingInterval = 0;       // RSSI sample rate in ms
 unsigned long prevMillis = 0;           // Helper for sampling rate
 
 const unsigned int sampleSize = 15;      // Size our circular buffer
@@ -23,7 +23,7 @@ unsigned int curr;                      // Index into circular buffer
 const unsigned int rssiStarting = 100;  // Starting RSSI (intentionally large)
 unsigned int rssiMovSum;                // Moving sum of RSSI's in circular buffer
 
-const float m = 9.900;
+const float m = 9.909;
 const float c = 58.234;
 
 
@@ -43,10 +43,10 @@ void setup() {
     Serial.println("Begin did not work");
   }
 
-  BLE.setLocalName(deviceName);
+  BLE.setLocalName(nameThisDevice);
   BLE.advertise();
 
-  BLE.scanForName(centralName);
+  BLE.scanForName(nameThisDevice);
 
   Serial.println("Peripheral is running");
 }
@@ -54,14 +54,15 @@ void setup() {
 void loop() {
   uint currMillis = millis();
   if (currMillis - prevMillis > samplingInterval) {
-    BLEDevice central = BLE.available();
+    BLEDevice otherDevice = BLE.available();
     
-    if (central) {
+    if (otherDevice) {
       BLE.stopScan();
-      uint rssi = central.rssi() * -1;
-      checkContact(central, rssi);
-      BLE.scanForName(centralName);
+      uint rssi = otherDevice.rssi() * -1;
+      checkContact(otherDevice, rssi);
+      BLE.scanForName(nameOtherDevice);
     }
+
     prevMillis = millis();
   }
 }
