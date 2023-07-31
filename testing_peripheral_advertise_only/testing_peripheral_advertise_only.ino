@@ -23,6 +23,9 @@ unsigned int curr;                      // Index into circular buffer
 const unsigned int rssiStarting = 100;  // Starting RSSI (intentionally large)
 unsigned int rssiMovSum;                // Moving sum of RSSI's in circular buffer
 
+
+const int buzzerPin = 10;
+
 const float m = 9.909;
 const float c = 58.234;
 
@@ -35,9 +38,10 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(LEDR, OUTPUT);
   pinMode(LEDG, OUTPUT);
-
+  
   digitalWrite(LEDR, 1);
   digitalWrite(LEDG, 1);
+  noTone(buzzerPin);
 
   if (!BLE.begin()) {
     Serial.println("Begin did not work");
@@ -127,6 +131,9 @@ unsigned int rssiMovAvg(uint rssi) {
 // Alert method: update to preferred method (e.g. buzzer)
 void alertContact() {
   digitalWrite(LED_BUILTIN, 1);
+  tone(buzzerPin, 100);
+  delay(50);
+  noTone(buzzerPin);
 }
 
 void recordContact(BLEDevice central) {
