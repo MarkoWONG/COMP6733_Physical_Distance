@@ -110,7 +110,7 @@ void loop() {
 
     BLE.stopScan();
     BLE.stopAdvertise();
-    BLE.disconnect();
+    // BLE.disconnect();
     Serial.println("Checkpoint: 2");
 
     while (peripheral && !BLE.connected()) {
@@ -365,12 +365,13 @@ void degCharacteristicWritten(BLEDevice central, BLECharacteristic characteristi
 
   for (int i = 0; i < 5; i++) {
     digitalWrite(LEDG, 0);
-    delay(1000);
+    delay(250);
     digitalWrite(LEDG, 1);
-    delay(1000);
+    delay(259);
   }
 
   distCharacteristic.writeValue(dist);
+  // distCharacteristic.writeValue(33);
   checkContact(dist, central);
 
 }

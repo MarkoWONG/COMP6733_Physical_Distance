@@ -14,7 +14,7 @@ const char * nameOtherDevice = "testing_device";
 const int adjustmentFactor = 1;
 const int closeContactDist = 200;   // in mm
 
-const int samplingInterval = 0;       // RSSI sample rate in ms
+const int samplingInterval = 100;       // RSSI sample rate in ms
 unsigned long prevMillis = 0;           // Helper for sampling rate
 
 const unsigned int sampleSize = 15;      // Size our circular buffer
