@@ -14,7 +14,7 @@ const char * nameOtherDevice = "testing_device";
 const int adjustmentFactor = 1;
 const int closeContactDist = 200;   // in mm
 
-const int samplingInterval = 100;       // RSSI sample rate in ms
+const int samplingInterval = 0;       // RSSI sample rate in ms
 unsigned long prevMillis = 0;           // Helper for sampling rate
 
 const unsigned int sampleSize = 15;      // Size our circular buffer
@@ -23,11 +23,15 @@ unsigned int curr;                      // Index into circular buffer
 const unsigned int rssiStarting = 100;  // Starting RSSI (intentionally large)
 unsigned int rssiMovSum;                // Moving sum of RSSI's in circular buffer
 
-
 const int buzzerPin = 10;
 
-const float m = 9.909;
-const float c = 58.234;
+float m = 0.0954; // Control
+// float m = 0.0643; // Pocket
+// float m = 0.112; // Wrist
+
+float c = 23.5; // Control
+// float c = 43; // Pocket
+// float c = 37.8; // Wrist
 
 
 
@@ -58,6 +62,7 @@ void setup() {
 void loop() {
   uint currMillis = millis();
   if (currMillis - prevMillis > samplingInterval) {
+    BLE.stopAdvertise();
     BLEDevice otherDevice = BLE.available();
     
     if (otherDevice) {
@@ -65,10 +70,14 @@ void loop() {
       uint rssi = otherDevice.rssi() * -1;
       checkContact(otherDevice, rssi);
       BLE.scanForName(nameOtherDevice);
+    } else {
+      BLE.scanForName(nameOtherDevice);
     }
 
+    BLE.advertise();
     prevMillis = millis();
   }
+
 }
 
 

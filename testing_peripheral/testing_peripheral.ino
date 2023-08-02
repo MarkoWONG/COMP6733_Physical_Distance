@@ -22,6 +22,39 @@ unsigned int curr;                      // Index into circular buffer
 const unsigned int rssiStarting = 100;  // Starting RSSI (intentionally large)
 unsigned int rssiMovSum;                // Moving sum of RSSI's in circular buffer
 
+const int buzzerPin = 10;
+
+float m = 0.0954; // Control
+// float m = 0.0544; // X 45-deg down
+// float m = 0.0488; // X 90-deg down
+// float m = 0.0672; // X 45-deg up
+// float m = 0.0264; // X 90-deg up
+// float m = 0.0775; // Y 45-deg left
+// float m = 0.083; // Y 90-deg left
+// float m = 0.0405; // Y 45-deg right
+// float m = 0.0614; // Z 45-deg CW
+// float m = 0.0752; // Z 90-deg CW
+// float m = 0.0757; // Z 135-deg CW
+// float m = 0.0787; // Z 180-deg CW
+// float m = 0.180; // Control for Pocket/Wrist
+// float m = 0.0643; // Pocket adjusted
+// float m = 0.112; // Wrist adjusted
+
+float c = 23.5; // Control
+// float c = 29.9; // X 45-deg down
+// float c = 40.5; // X 90-deg down
+// float c = 31.9; // X 45-deg up
+// float c = 39.2; // X 90-deg up
+// float c = 28.6; // Y 45-deg left
+// float c = 37; // Y 90-deg left
+// float c = 40.7; // Y 45-deg right
+// float c = 32.3; // Z 45-deg CW
+// float c = 30.2; // Z 90-deg CW
+// float c = 29.1; // Z 135-deg CW
+// float c = 32.1; // Z 180 deg CW
+// float c = 28.9; // Control for Pocket/Wrist
+// float c = 43; // Pocket adjusted
+// float c = 37.8; // Wrist adjusted
 
 // Contact tracing service
 // BLEService contactTracingService("b2bb2fe8-b971-4afa-988f-e350f071f0ba");
@@ -36,6 +69,8 @@ void setup() {
 
   digitalWrite(LEDR, 1);
   digitalWrite(LEDG, 1);
+  noTone(buzzerPin);
+
 
   if (!BLE.begin()) {
     Serial.println("Begin did not work");
@@ -120,7 +155,7 @@ unsigned int distance(uint rssi) {
   uint dist; // in cm
 
   // 2PM Measurement: m = 9.909, c = 58.234
-  dist = max((rssi - 58.234) / 9.909, 0) * 100 * adjustmentFactor;
+  dist = max((rssi - c) / m, 0) * adjustmentFactor;
 
   Serial.print("Distance: ");
   Serial.println(dist);
@@ -153,6 +188,9 @@ unsigned int rssiMovAvg() {
 // Alert method: update to preferred method (e.g. buzzer)
 void alertContact() {
   digitalWrite(LED_BUILTIN, 1);
+  tone(buzzerPin, 100);
+  delay(50);
+  noTone(buzzerPin);
 }
 
 void recordContact(BLEDevice central) {
