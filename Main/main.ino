@@ -29,6 +29,8 @@ unsigned long prevMillis = 0;
 uint errorCount = 0;
 const uint maxErrors = 3;
 
+bool isCentral = false;
+
 // Keep a measure of the device's angle
 int deg[2];
 
@@ -73,8 +75,8 @@ void setup() {
     Serial.println("Failed to initialise IMU!");
   }
 
-  // BLE.setEventHandler(BLEConnected, centralConnected);
-  degCharacteristic.setEventHandler(BLEWritten, degCharacteristicWritten);
+  BLE.setEventHandler(BLEConnected, centralConnected);
+  // degCharacteristic.setEventHandler(BLEWritten, degCharacteristicWritten);
 
   Serial.println("Bluetooth® Low Energy Central scan");
   Serial.println("----------------------------------");
@@ -92,32 +94,25 @@ void setup() {
   }
 
   BLE.advertise();
-  // BLE.scanForName(deviceName);
+  BLE.scanForName(deviceName);
 }
 
 void loop() {
   uint dist;
   bool contact;
   uint rssi;
-  unsigned long currMillis = millis();
   BLE.poll();
+  BLEDevice peripheral = BLE.available();
 
-
-  if (currMillis - prevMillis >= samplingInterval) {
-    digitalWrite(LED_BUILTIN, 0);
-
-    BLEDevice peripheral = BLE.available();
-
+  if (peripheral) {
+    Serial.println("Found peripheral");
     BLE.stopScan();
-    BLE.stopAdvertise();
-    // BLE.disconnect();
-    Serial.println("Checkpoint: 2");
+    isCentral = true;
 
-    while (peripheral && !BLE.connected()) {
-      // If the device allows you to connect, take the average RSSI's
-      Serial.println("Checkpoint: 3");
+    if (peripheral.connect()) {
+      Serial.println("Connected to peripheral: " + peripheral.address());
 
-      if (peripheral.connect()) {
+      while (peripheral.connected()) {
         Serial.println("Connected to peripheral: " + peripheral.address());
         rssi = rssiAvg(peripheral);
 
@@ -135,87 +130,35 @@ void loop() {
           Serial.print("DIST Characteristic subscribe status: ");
           Serial.println(distStatus);
 
-          // if (distStatus) {
-            // while (!distPeriphCharacteristic.written()) {
-            for (int i = 0; i < 5; i++) {
-              digitalWrite(LEDR, 0);
-              delay(250);
-              digitalWrite(LEDR, 1);
-              delay(250);
-            };
 
-            byte tempDist;
-            distPeriphCharacteristic.readValue(tempDist);
-            Serial.print("Distance provided by peripheral: ");
-            Serial.println((uint)tempDist);
-          // }
+          byte tempDist;
+          distPeriphCharacteristic.readValue(tempDist);
+          Serial.print("Distance provided by peripheral: ");
+          Serial.println((uint)tempDist);
 
           for (int i = 0; i < 5; i++) {
             digitalWrite(LEDB, 0);
-            delay(1000);
+            delay(250);
             digitalWrite(LEDB, 1);
-            delay(1000);
+            delay(250);
           };
           
         }
 
         peripheral.disconnect();
         Serial.println("Disconnected from peripheral: " + peripheral.address());
-
-      // If the device does not allow you to connect, then take the advertised RSSI
-      } else {
-        rssi = peripheral.rssi() * -1;
       }
-  
-      dist = distance(rssi);
-      Serial.println("Device: " + peripheral.address() + ", RSSI: " + rssi + ", Distance: " + dist);
 
-      checkContact(dist, peripheral);
-      // if (dist < contactDist) {
-      //   alertContact();
-      //   recordContact(peripheral);
-      // } else {
-      //   digitalWrite(LED_BUILTIN, 0);
-      //   noTone(buzzerPin);
-      // }
-
-      // Move onto the next device that was scanned
-      peripheral = BLE.available();
-      Serial.println("Checkpoint: 4");
+        // If the device does not allow you to connect, then take the advertised RSSI
+    } else {
+      rssi = peripheral.rssi() * -1;
     }
-
-    // Keep on advertising until it works.
-    // RED LED indicates advertising has failed.
-    while (!BLE.advertise()) {
-      digitalWrite(LEDR, 0);
-      Serial.println("Advertise: failure");
-      BLE.stopAdvertise();
-      errorCount++;
-      if (errorCount >= maxErrors) {
-        digitalWrite(resetPin, 0);
-      }
-    }
-    errorCount = 0;
-    digitalWrite(LEDR, 1);
-    Serial.println("Advertise: success!");
-
-    // Keep on scanning until it works
-    // Blue LED indicates it has failed.
-    while (!BLE.scanForName(deviceName)) {
-      digitalWrite(LEDB, 0);
-      Serial.println("Scan failed!");
-      BLE.stopScan();
-      delay(samplingInterval);
-      errorCount++;
-      if (errorCount > maxErrors) {
-        digitalWrite(resetPin, 0);
-      }
-    }
-    errorCount = 0;
-    Serial.println("Scan success!");
-    digitalWrite(LEDB, 1);
     
-    prevMillis = millis();
+    dist = distance(rssi);
+    Serial.println("Device: " + peripheral.address() + ", RSSI: " + rssi + ", Distance: " + dist);
+    checkContact(dist, peripheral);
+    BLE.scanForName(deviceName);
+    isCentral = false;
   }
   
 }
@@ -335,21 +278,45 @@ void returnAngle() {
 }
 
 void centralConnected(BLEDevice central) {
-  Serial.println("Central connected: " + central.address());
+  if (!isCentral) {
+    BLE.stopScan();
 
-  while (central.connected()) {
-    if (degCharacteristic.written()) {
-      tone(buzzerPin, 50);
-      delay(1000);
-      noTone(buzzerPin);
-      Serial.print("DEG characteristic written by connected central: ");
-      Serial.println(degCharacteristic.value());
+    Serial.println("Central connected: " + central.address());
 
-      break;
+    while (central.connected()) {
+      if (degCharacteristic.written()) {
+        tone(buzzerPin, 50);
+        delay(1000);
+        noTone(buzzerPin);
+
+        Serial.print("DEG characteristic: ");
+        Serial.println(degCharacteristic.value());
+        Serial.print("Written by: ");
+        Serial.println(central.address());
+
+        uint rssi = rssiAvg(central);
+        uint dist = distance(rssi);
+        Serial.print("Distance from within characteristic: ");
+        Serial.println(dist);
+
+        for (int i = 0; i < 5; i++) {
+          digitalWrite(LEDG, 0);
+          delay(250);
+          digitalWrite(LEDG, 1);
+          delay(259);
+        }
+
+        distCharacteristic.writeValue(dist);
+        checkContact(dist, central);
+
+        break;
+      }
     }
-  }
 
-  Serial.println("Central disconnected: " + central.address());
+    central.disconnect();
+    Serial.println("Central disconnected: " + central.address());
+    BLE.scanForName(deviceName);
+  }
 }
 
 void degCharacteristicWritten(BLEDevice central, BLECharacteristic characteristic) {
