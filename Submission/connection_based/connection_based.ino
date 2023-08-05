@@ -1,3 +1,6 @@
+// COMP6733 PROJECT
+// GROUP: FREE FOR ALL
+
 // Code was inspired by https://github.com/arduino-libraries/ArduinoBLE/blob/master/examples/Central/Scan/Scan.ino
 #include <ArduinoBLE.h>
 #include <TimeLib.h>

@@ -137,7 +137,10 @@ void centralConnected(BLEDevice central) {
   while (central.connected()) {
     uint rssi = rssiMovAvg();
     uint dist = distance(rssi);
+    Serial.print("Distance: ");
+    Serial.println(dist);
     checkContact(dist, central);
+    delay(100);
   }
 
   Serial.println("Disconnection from: " + central.address());
