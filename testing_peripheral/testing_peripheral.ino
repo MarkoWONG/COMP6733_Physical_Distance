@@ -1,3 +1,6 @@
+// COMP6733 PROJECT
+// GROUP: FREE FOR ALL
+
 /*
 -   TESTING CODE - PERIPHERAL DEVICE
 -   This code is written for the purposes of conducting our experiments.
@@ -24,41 +27,42 @@ unsigned int rssiMovSum;                // Moving sum of RSSI's in circular buff
 
 const int buzzerPin = 10;
 
-float m = 0.0954; // Control
-// float m = 0.0544; // X 45-deg down
-// float m = 0.0488; // X 90-deg down
-// float m = 0.0672; // X 45-deg up
-// float m = 0.0264; // X 90-deg up
-// float m = 0.0775; // Y 45-deg left
-// float m = 0.083; // Y 90-deg left
-// float m = 0.0405; // Y 45-deg right
-// float m = 0.0614; // Z 45-deg CW
-// float m = 0.0752; // Z 90-deg CW
-// float m = 0.0757; // Z 135-deg CW
-// float m = 0.0787; // Z 180-deg CW
-// float m = 0.180; // Control for Pocket/Wrist
-// float m = 0.0643; // Pocket adjusted
-// float m = 0.112; // Wrist adjusted
 
-float c = 23.5; // Control
-// float c = 29.9; // X 45-deg down
-// float c = 40.5; // X 90-deg down
-// float c = 31.9; // X 45-deg up
-// float c = 39.2; // X 90-deg up
-// float c = 28.6; // Y 45-deg left
-// float c = 37; // Y 90-deg left
-// float c = 40.7; // Y 45-deg right
-// float c = 32.3; // Z 45-deg CW
-// float c = 30.2; // Z 90-deg CW
-// float c = 29.1; // Z 135-deg CW
-// float c = 32.1; // Z 180 deg CW
-// float c = 28.9; // Control for Pocket/Wrist
-// float c = 43; // Pocket adjusted
-// float c = 37.8; // Wrist adjusted
+//-----------------------------CALIBRATION---------------------------//
+float m = 0.0954;     // Control
+// float m = 0.0544;  // X 45-deg down
+// float m = 0.0488;  // X 90-deg down
+// float m = 0.0672;  // X 45-deg up
+// float m = 0.0264;  // X 90-deg up
+// float m = 0.0775;  // Y 45-deg left
+// float m = 0.083;   // Y 90-deg left
+// float m = 0.0405;  // Y 45-deg right
+// float m = 0.0614;  // Z 45-deg CW
+// float m = 0.0752;  // Z 90-deg CW
+// float m = 0.0757;  // Z 135-deg CW
+// float m = 0.0787;  // Z 180-deg CW
+// float m = 0.180;   // Control for Pocket/Wrist
+// float m = 0.0643;  // Pocket adjusted
+// float m = 0.112;   // Wrist adjusted
 
-// Contact tracing service
-// BLEService contactTracingService("b2bb2fe8-b971-4afa-988f-e350f071f0ba");
+float c = 23.5;       // Control
+// float c = 29.9;    // X 45-deg down
+// float c = 40.5;    // X 90-deg down
+// float c = 31.9;    // X 45-deg up
+// float c = 39.2;    // X 90-deg up
+// float c = 28.6;    // Y 45-deg left
+// float c = 37;      // Y 90-deg left
+// float c = 40.7;    // Y 45-deg right
+// float c = 32.3;    // Z 45-deg CW
+// float c = 30.2;    // Z 90-deg CW
+// float c = 29.1;    // Z 135-deg CW
+// float c = 32.1;    // Z 180 deg CW
+// float c = 28.9;    // Control for Pocket/Wrist
+// float c = 43;      // Pocket adjusted
+// float c = 37.8;    // Wrist adjusted
 
+
+//-----------------------------SETUP---------------------------//
 void setup() {
   rssiValsInitialisation();
 
@@ -79,17 +83,21 @@ void setup() {
   BLE.setLocalName(deviceName);
   BLE.advertise();
 
-  // Event handlers for when a central connects.
+  // Event handlers for when a central connects and disconnects
   BLE.setEventHandler(BLEConnected, centralConnected);
   BLE.setEventHandler(BLEDisconnected, centralDisconnected);
 
   Serial.println("Peripheral is running");
 }
 
+
+//-----------------------------LOOP---------------------------//
 void loop() {
   BLE.poll();
 }
 
+
+//-----------------------------EVENT HANDLERS---------------------------//
 void centralConnected(BLEDevice central) {
   digitalWrite(LEDR, 1);
   digitalWrite(LEDG, 0);
@@ -116,11 +124,8 @@ void centralDisconnected(BLEDevice central) {
   rssiValsInitialisation();
 }
 
-void peripheralDiscoveredWithName(BLEDevice peripheral) {
-  Serial.print("Event handler: Discovered peripheral with address: ");
-  Serial.println(peripheral.address());  
-}
 
+//-----------------------------MEASUREMENT CALCULATIONS---------------------------//
 void rssiValsInitialisation() {
   rssiMovSum = rssiStarting * sampleSize;
   curr = 0;
@@ -150,7 +155,6 @@ bool checkContactRssiStrategy() {
 }
 
 // Compute the distance to the connected device.
-// TODO: need a fast calibration process for demo day.
 unsigned int distance(uint rssi) {
   uint dist; // in cm
 
@@ -189,7 +193,7 @@ unsigned int rssiMovAvg() {
 void alertContact() {
   digitalWrite(LED_BUILTIN, 1);
   tone(buzzerPin, 100);
-  delay(50);
+  delay(100);
   noTone(buzzerPin);
 }
 

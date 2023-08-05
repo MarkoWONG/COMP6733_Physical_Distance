@@ -1,3 +1,6 @@
+// COMP6733 PROJECT
+// GROUP: FREE FOR ALL
+
 // Code was inspired by https://github.com/arduino-libraries/ArduinoBLE/blob/master/examples/Central/Scan/Scan.ino
 #include <ArduinoBLE.h>
 #include <TimeLib.h>
@@ -17,7 +20,7 @@ const char * deviceName = "6733ContactTracing";
 
 // Module control: turn these features on or off
 const bool timestampingOn = false;
-const bool buzzerOn = false;
+const bool buzzerOn = true;
 
 // Hardware
 const int buzzerPin = 10;
@@ -30,6 +33,7 @@ unsigned long prevMillis = 0;
 //-----------------------------CALIBRATION---------------------------//
 const uint adjustmentFactor = 1;
 float m = 0.0806; // Control Nano-Nano
+
 float c = 44.4;   // Control Nano-Nano
 
 
@@ -56,7 +60,7 @@ void setup() {
   noTone(buzzerPin);
   
   if (!BLE.begin()) {
-    Serial.println("starting Bluetooth® Low Energy module failed!");
+    Serial.println("Failed to start BLE!");
     while (1);
   }
   

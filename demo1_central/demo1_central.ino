@@ -1,3 +1,6 @@
+// COMP6733 PROJECT
+// GROUP: FREE FOR ALL
+
 // Code was inspired by https://github.com/arduino-libraries/ArduinoBLE/blob/master/examples/Central/Scan/Scan.ino
 #include <ArduinoBLE.h>
 #include <TimeLib.h>
@@ -6,7 +9,6 @@
 #define TIME_REQUEST 7
 
 
-const uint samplingInterval = 250;      // NOT USED TBC
 const uint sampleSize = 15;             // Number of values in moving average
 unsigned int rssiPool[sampleSize];      // Circular buffer (i.e. queue)
 unsigned int curr;                      // Index into circular buffer
@@ -30,8 +32,11 @@ unsigned long prevMillis = 0;
 
 //-----------------------------CALIBRATION---------------------------//
 const uint adjustmentFactor = 1;
-float m = 0.0806; // Control Nano-Nano
-float c = 44.4;   // Control Nano-Nano
+// float m = 0.0806; // Control Nano-Nano
+float m = 0.155;
+
+// float c = 44.4;   // Control Nano-Nano
+float c = 39;
 
 
 //-----------------------------SETUP---------------------------//
@@ -54,7 +59,7 @@ void setup() {
   noTone(buzzerPin);
   
   if (!BLE.begin()) {
-    Serial.println("starting Bluetooth® Low Energy module failed!");
+    Serial.println("Failed to start BLE!");
     while (1);
   }
   
@@ -63,8 +68,6 @@ void setup() {
     setCurrentTime();
   }
 
-  // BLE.setLocalName(deviceName);
-  // BLE.advertise();
   BLE.scanForName(deviceName);
 
   Serial.println("Central started!");
@@ -110,9 +113,8 @@ void rssiValsInitialisation() {
 }
 
 
-// Computes RSSI of the connected central device
+// Computes moving average of RSSI
 unsigned int rssiMovAvg(uint rssi) {
-  // uint rssi = BLE.rssi() * -1;
   Serial.print("Instant RSSI: ");
   Serial.println(rssi);
 
@@ -133,7 +135,7 @@ unsigned int rssiMovAvg(uint rssi) {
   return rssiMovAvg;
 }
 
-
+// Convert RSSI to distance
 uint distance(uint rssi) {
   uint dist = max((rssi - c) / m, 0) * adjustmentFactor;
   return dist;
