@@ -32,10 +32,12 @@ unsigned long prevMillis = 0;
 
 //-----------------------------CALIBRATION---------------------------//
 const uint adjustmentFactor = 1;
-float m = 0.0806; // Control Nano-Nano
+// float m = 0.0806; // Control Nano-Nano
+float m = 0.140; // 
 
-float c = 44.4;   // Control Nano-Nano
 
+// float c = 44.4;   // Control Nano-Nano
+float c = 27.3;   //
 
 //-----------------------------SETUP---------------------------//
 void setup() {

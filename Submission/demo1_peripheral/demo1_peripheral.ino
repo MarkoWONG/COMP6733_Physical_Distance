@@ -32,10 +32,12 @@ unsigned long prevMillis = 0;
 
 //-----------------------------CALIBRATION---------------------------//
 const uint adjustmentFactor = 1;
-float m = 0.0806; // Control Nano-Nano
+// float m = 0.147; // Control Nano-Nano
+float m = 0.140; // 
 
-float c = 44.4;   // Control Nano-Nano
 
+// float c = 41.5;   // Control Nano-Nano
+float c = 27.3;   //
 
 BLEService contactService("19B10000-E8F2-537E-4F6C-D104768A1214");
 BLEBoolCharacteristic contactCharacteristic("19B10001-E8F2-537E-4F6C-D104768A1214", BLERead | BLENotify);

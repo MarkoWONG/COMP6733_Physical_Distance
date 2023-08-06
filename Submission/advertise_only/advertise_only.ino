@@ -28,7 +28,7 @@ const int resetPin = 8;
 const uint resetInterval = 10000;
 
 // Manufacturer's Data
-const uint8_t rssiAt2m = 67;
+const uint8_t rssiAt2m = 71;
 const uint8_t manufactData[1] = {rssiAt2m};
 
 // Array for storing other device's manufacturer's data
@@ -40,8 +40,10 @@ unsigned long prevMillis = 0;
 
 //-----------------------------CALIBRATION---------------------------//
 const uint adjustmentFactor = 1;
-float m = 0.0806; // Control Nano-Nano
-float c = 44.4;   // Control Nano-Nano
+float m = 0.147; // Control Nano-Nano
+
+
+float c = 41.5;   // Control Nano-Nano
 
 
 //-----------------------------SETUP---------------------------//
