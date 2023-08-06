@@ -32,11 +32,9 @@ unsigned long prevMillis = 0;
 
 //-----------------------------CALIBRATION---------------------------//
 const uint adjustmentFactor = 1;
-// float m = 0.0806; // Control Nano-Nano
-float m = 0.155;
+float m = 0.0806; // Control Nano-Nano
 
-// float c = 44.4;   // Control Nano-Nano
-float c = 39;
+float c = 44.4;   // Control Nano-Nano
 
 
 //-----------------------------SETUP---------------------------//
@@ -90,6 +88,7 @@ void loop() {
         uint rssiAvg = rssiMovAvg(rssi);
         uint dist = distance(rssiAvg);
         checkContact(dist, peripheral);
+        delay(100);
       }
     }
 
